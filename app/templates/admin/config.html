@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}{% block content %}
+<div class="bar"><div><h2>Configurações</h2><p class="mut">Tudo aqui altera a loja de verdade, sem mexer no código.</p></div></div>
+<form method="post" class="cfg"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% for g, fs in groups %}<section class="card"><h3>{{ g }}</h3><div class="fields">{% for k, l, t in fs %}
+{% if t == 'check' %}<label class="switch"><input type="checkbox" name="{{ k }}" {{ 'checked' if s[k] != '0' }}><i></i><span>{{ l }}</span></label>
+{% elif t == 'area' %}<label class="fld wide"><span>{{ l }}</span><textarea name="{{ k }}" rows="3">{{ s[k] }}</textarea></label>
+{% elif t == 'color' %}<label class="fld"><span>{{ l }}</span><input type="color" name="{{ k }}" value="{{ s[k] }}" class="colorin"></label>
+{% elif t == 'sort' %}<label class="fld"><span>{{ l }}</span><select name="{{ k }}"><option value="new" {{ 'selected' if s[k] == 'new' }}>Mais recentes</option><option value="asc" {{ 'selected' if s[k] == 'asc' }}>Menor preço</option><option value="desc" {{ 'selected' if s[k] == 'desc' }}>Maior preço</option></select></label>
+{% else %}<label class="fld"><span>{{ l }}</span><input name="{{ k }}" {{ 'type=number min=0' if t == 'number' }} value="{{ s[k] }}"></label>{% endif %}{% endfor %}</div></section>{% endfor %}
+<div class="savebar"><button class="btn">Salvar configurações</button></div></form>{% endblock %}

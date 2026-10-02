@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% from "admin/_i.html" import ico %}
+{% block body %}{% set ep = request.endpoint %}{% if current_user.is_authenticated %}
+<div class="top"><button id="mnu" aria-label="Menu">☰</button><b>BYN · ADMIN</b></div>
+<div class="shell"><aside class="side"><div class="logo"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="" width="30" height="34"><div>BYN<small>PAINEL</small></div></div>
+<nav><a class="{{ 'on' if ep == 'admin.dashboard' }}" href="{{ url_for('admin.dashboard') }}">{{ ico('dash') }}Dashboard</a>
+<a class="{{ 'on' if ep in ('admin.products', 'admin.edit') and request.args.get('f') != 'promo' }}" href="{{ url_for('admin.products') }}">{{ ico('box') }}Produtos</a>
+<a class="{{ 'on' if request.args.get('f') == 'promo' }}" href="{{ url_for('admin.products', f='promo') }}">{{ ico('pct') }}Promoções</a>
+<a class="{{ 'on' if request.view_args and request.view_args.get('kind') == 'categorias' }}" href="{{ url_for('admin.registry', kind='categorias') }}">{{ ico('tag') }}Categorias</a>
+<a class="{{ 'on' if request.view_args and request.view_args.get('kind') == 'marcas' }}" href="{{ url_for('admin.registry', kind='marcas') }}">{{ ico('star') }}Marcas</a>
+<a class="{{ 'on' if ep == 'admin.notices' }}" href="{{ url_for('admin.notices') }}">{{ ico('bell') }}Avisos</a>
+<a class="{{ 'on' if ep == 'admin.config' }}" href="{{ url_for('admin.config') }}">{{ ico('cfg') }}Configurações</a></nav>
+<div class="sfoot"><a href="{{ url_for('public.index') }}" target="_blank">{{ ico('ext') }}Ver loja</a><a class="{{ 'on' if ep == 'admin.password' }}" href="{{ url_for('admin.password') }}">{{ ico('lock') }}Senha</a><a href="{{ url_for('admin.logout') }}">{{ ico('out') }}Sair</a></div></aside>
+<div class="scrim" id="scrim"></div><main class="main">{% else %}<div class="adm"><main>{% endif %}
+<div class="toasts">{% for m in get_flashed_messages() %}<div class="flash {{ 'ok' if m.startswith('✓') else 'err' }}">{{ m }}</div>{% endfor %}</div>
+{% block content %}{% endblock %}</main></div>
+<div id="cm" class="cm" hidden><div class="cmb"><p id="cmt"></p><div class="cma"><button class="btn ghost" id="cmn" type="button">Cancelar</button><button class="btn danger" id="cmy" type="button">Confirmar</button></div></div></div>
+<script>
+document.querySelectorAll("[data-n]").forEach(e=>{const n=+e.dataset.n;let t0;const f=t=>{t0=t0||t;const k=Math.min((t-t0)/900,1);e.textContent=Math.round(n*(1-Math.pow(1-k,3)));k<1&&requestAnimationFrame(f)};requestAnimationFrame(f)});
+setTimeout(()=>document.querySelectorAll(".flash").forEach(f=>{f.style.opacity=0;setTimeout(()=>f.remove(),600)}),4500);
+const $=s=>document.querySelector(s);let pend=null;
+document.addEventListener("submit",e=>{const f=e.target;if(f.dataset.confirm&&!f._ok){e.preventDefault();pend=f;$("#cmt").textContent=f.dataset.confirm;$("#cm").hidden=false;return}
+const b=f.querySelector("button:not([type=button])");if(b)b.classList.add("loading")});
+$("#cmy").onclick=()=>{if(pend){pend._ok=true;pend.submit()}};$("#cmn").onclick=()=>{$("#cm").hidden=true;pend=null};
+addEventListener("keydown",e=>{if(e.key==="Escape"){$("#cm").hidden=true;document.body.classList.remove("open")}});
+const m=$("#mnu");if(m){m.onclick=()=>document.body.classList.toggle("open");$("#scrim").onclick=()=>document.body.classList.remove("open")}
+</script>{% endblock %}

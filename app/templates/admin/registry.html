@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}{% block content %}
+<div class="bar"><div><h2>{{ title }}</h2><p class="mut">{{ items|length }} cadastrad{{ 'as' if kind == 'categorias' else 'as' }}. {{ 'Novas categorias aparecem sozinhas na loja e no letreiro.' if kind == 'categorias' else 'Marcas com produtos aparecem na loja e nos filtros.' }}</p></div></div>
+<form method="post" enctype="multipart/form-data" class="card" style="margin-bottom:18px"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="fields"><label class="fld"><span>Nome</span><input name="name" placeholder="{{ 'Ex.: Chuteiras Usadas' if kind == 'categorias' else 'Ex.: Nike' }}" maxlength="60" required autocomplete="off"></label>
+{% if kind == 'marcas' %}<label class="fld"><span>Logo (opcional)</span><input type="file" name="logo" accept="image/*"></label>{% endif %}</div>
+<div><button class="btn">+ Adicionar</button></div></form>
+{% for i in items %}<div class="row">{% if i.logo %}<div class="mini"><img src="{{ url_for('static', filename='uploads/' ~ i.logo) }}" alt=""></div>{% endif %}<div class="grow"><b style="color:var(--fg)">{{ i.name }}</b><small>{{ usage[i.id] }} produto{{ 's' if usage[i.id] != 1 }}</small></div>
+<form method="post" action="{{ url_for('admin.registry_delete', kind=kind, iid=i.id) }}" data-confirm="Excluir “{{ i.name }}”? {{ 'Só é possível se nenhum produto a usa.' }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn sm danger">Excluir</button></form></div>
+{% else %}<div class="emptyb"><b>Nada cadastrado ainda</b><p>Use o campo acima para adicionar o primeiro.</p></div>{% endfor %}{% endblock %}

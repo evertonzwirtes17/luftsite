@@ -1,0 +1,4 @@
+{% extends "admin/base.html" %}{% block content %}
+<div class="bar"><h2>Avise-me · reposição</h2></div>
+{% for n in items %}<div class="row"><div class="grow"><b>{{ pm.get(n.product_id, 'Produto removido') }}</b><small>{{ n.contact }} · {{ n.created_at.strftime('%d/%m %H:%M') }}</small></div>
+<form method="post" action="{{ url_for('admin.notice_delete', nid=n.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn sm ghost">Concluído</button></form></div>{% else %}<p class="empty">Nenhum pedido de aviso ainda.</p>{% endfor %}{% endblock %}

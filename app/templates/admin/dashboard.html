@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}{% block content %}
+<div class="bar"><h2>Dashboard</h2><a class="btn sm" href="{{ url_for('admin.edit') }}">+ Novo produto</a></div>
+<h3 class="sub">Hoje</h3><div class="stats">{% for l, n in x.hoje %}<div class="stat"><b data-n="{{ n }}">{{ n }}</b><span>{{ l }}</span></div>{% endfor %}</div>
+{% if x.hot %}<p class="legend">Produto mais acessado hoje: <b style="color:var(--brand)">{{ x.hot }}</b></p>{% endif %}
+{% if x.alerts %}<h3 class="sub">⚠ Alertas de estoque</h3>{% for n, c, s, q in x.alerts %}<div class="row"><div class="grow">{{ n }}{{ ' — ' ~ c if c }}{{ ' — tamanho ' ~ s if s }}</div><b>{{ 'esgotado' if q == 0 else 'apenas ' ~ q ~ ' un.' }}</b></div>{% endfor %}{% endif %}
+{% if x.att %}<h3 class="sub">Produtos que precisam de atenção</h3>{% for p, why in x.att %}<div class="row"><div class="grow">⚠ {{ p.name }} — {{ why }}</div><a class="btn sm ghost" href="{{ url_for('admin.edit', pid=p.id) }}">Corrigir</a></div>{% endfor %}{% endif %}
+{% if x.avisos %}<p class="legend"><a href="{{ url_for('admin.notices') }}" style="color:var(--brand)">{{ x.avisos }} cliente(s) pediram aviso de reposição →</a></p>{% endif %}
+<h3 class="sub">Geral</h3><div class="stats">{% for l, n in stats %}<div class="stat"><b {% if n is number %}data-n="{{ n }}"{% endif %}>{{ n }}</b><span>{{ l }}</span></div>{% endfor %}</div>
+<h3 class="sub">Últimos 7 dias</h3><div class="chart">{% for d in days %}<div class="col"><div class="bs"><i class="bv" style="height:{{ (d.v / mx * 100)|round }}%" title="{{ d.v }} visualizações"></i><i class="bw" style="height:{{ (d.w / mx * 100)|round }}%" title="{{ d.w }} cliques"></i></div><small>{{ d.label }}</small></div>{% endfor %}</div>
+<p class="legend"><i class="bv"></i> Visualizações &nbsp; <i class="bw"></i> Cliques no WhatsApp</p>
+<div class="two"><div><h3 class="sub">Mais visualizados</h3>{% for p, n in top_v %}<div class="row"><div class="grow">{{ p.name }}</div><b>{{ n }}</b></div>{% else %}<p class="empty">Ainda sem visualizações.</p>{% endfor %}</div>
+<div><h3 class="sub">Mais cliques no WhatsApp</h3>{% for p, n in top_w %}<div class="row"><div class="grow">{{ p.name }}</div><b>{{ n }}</b></div>{% else %}<p class="empty">Ainda sem cliques.</p>{% endfor %}</div></div>
+<div class="two"><div><h3 class="sub">Mais adicionados à seleção</h3>{% for n, c in x.sels %}<div class="row"><div class="grow">{{ n }}</div><b>{{ c }}</b></div>{% else %}<p class="empty">Sem dados ainda.</p>{% endfor %}</div>
+<div><h3 class="sub">Tamanhos mais selecionados</h3>{% for n, c in x.sizes %}<div class="row"><div class="grow">{{ n }}</div><b>{{ c }}</b></div>{% else %}<p class="empty">Sem dados ainda.</p>{% endfor %}</div>
+<div><h3 class="sub">Categorias mais acessadas</h3>{% for n, c in x.cats %}<div class="row"><div class="grow">{{ n }}</div><b>{{ c }}</b></div>{% else %}<p class="empty">Sem dados ainda.</p>{% endfor %}</div>
+<div><h3 class="sub">Horários de pico</h3>{% for n, c in x.hours %}<div class="row"><div class="grow">{{ n }}</div><b>{{ c }}</b></div>{% else %}<p class="empty">Sem dados ainda.</p>{% endfor %}</div></div>
+{% if x.low %}<h3 class="sub">Estoque baixo ou esgotado</h3>{% for p in x.low %}<div class="row"><div class="grow">{{ p.name }}</div><b>{{ p.total_stock }}</b><a class="btn sm ghost" href="{{ url_for('admin.edit', pid=p.id) }}">Editar</a></div>{% endfor %}{% endif %}
+{% if idle %}<h3 class="sub">Pouca interação</h3>{% for p in idle %}<div class="row"><div class="grow">{{ p.name }}</div><a class="btn sm ghost" href="{{ url_for('admin.edit', pid=p.id) }}">Editar</a></div>{% endfor %}{% endif %}{% endblock %}
