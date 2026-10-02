@@ -1,0 +1,5 @@
+<footer id="contato"><div><img class="flogo-s" src="{{ url_for('static', filename='img/logo.png') }}" alt="{{ S.store_name }}" width="56" height="62" loading="lazy"><b>{{ S.store_name }}</b><p>Atendimento direto pelo WhatsApp.</p>{% if S.hours %}<p>{{ S.hours }}</p>{% endif %}{% if S.address %}<p>{{ S.address }}</p>{% endif %}</div>
+  <div><b>Categorias</b>{% for c in all_categories %}<a href="{{ url_for('public.index') }}?cat={{ c.slug }}#catalogo">{{ c.name }}</a>{% endfor %}</div>
+  <div><b>Contato</b><a href="https://wa.me/{{ S.whatsapp }}" target="_blank" rel="noopener">WhatsApp</a>
+  {% if S.instagram %}<a href="https://instagram.com/{{ S.instagram }}" target="_blank" rel="noopener">Instagram</a>{% endif %}</div>
+  <small>© {{ year }} BYN Sports. Todos os direitos reservados.<span class="dev">Desenvolvido por <b>JETECH</b></span></small></footer>

@@ -1,0 +1,13 @@
+{% macro card(p) %}
+<article class="card{{ ' soldout' if not p.available }}" data-cat="{{ p.category.slug }}" data-avail="{{ 1 if p.available else 0 }}" data-team="{{ p.team or '' }}" data-sizes="{{ p.avail_sizes|join('|') }}" data-colors="{{ p.avail_colors|join('|') }}" data-brand="{{ p.brand.slug if p.brand else '' }}" data-price="{{ p.price_now }}" data-promo="{{ 1 if p.on_sale else 0 }}" data-ts="{{ p.ts }}" data-name="{{ (p.name ~ ' ' ~ (p.brand.name if p.brand else '') ~ ' ' ~ p.description)|lower }}">
+  <a class="thumb" href="{{ url_for('public.product', pid=p.id) }}">{% if p.cover %}<img class="i1" loading="lazy" src="{{ url_for('static', filename='uploads/' ~ p.cover) }}" alt="{{ p.name }}">{% if p.cover2 %}<img class="i2" loading="lazy" src="{{ url_for('static', filename='uploads/' ~ p.cover2) }}" alt="">{% endif %}{% else %}<span>BYN</span>{% endif %}
+    <div class="badges">{% if p.on_sale %}<b class="off">{{ p.discount }}% OFF</b>{% endif %}{% if not p.available %}<b class="out">ESGOTADO</b>{% elif p.low %}<b>ÚLTIMAS UNIDADES</b>{% endif %}{% if p.is_new %}<b>NOVO</b>{% endif %}{% if p.bestseller %}<b>MAIS VENDIDO</b>{% endif %}</div></a>
+  <button class="fav" data-id="{{ p.id }}" aria-label="Favoritar">♥</button>
+  <button class="sel" data-max="{{ p.total_stock if p.total_stock is not none else '' }}" data-img="{{ url_for('static', filename='uploads/' ~ p.cover) if p.cover else '' }}" data-price="{{ p.price_now|brl }}" data-val="{{ p.price_now }}" data-opts="{{ 1 if (p.all_sizes or p.all_colors) else 0 }}" data-id="{{ p.id }}" data-name="{{ p.name }}" aria-label="Adicionar à minha seleção">+</button>
+  <div class="info"><small>{{ p.brand.name if p.brand else p.category.name }}</small><h3><a href="{{ url_for('public.product', pid=p.id) }}">{{ p.name }}</a></h3>
+  <div class="price">{% if p.on_sale %}<s>{{ p.price|brl }}</s>{% endif %}<strong>{{ p.price_now|brl }}</strong></div>
+  {% if p.available %}<a class="btn" data-wa data-pid="{{ p.id }}" target="_blank" rel="noopener" href="{{ p|wa }}">Falar no WhatsApp →</a>{% else %}<a class="btn line" href="{{ url_for('public.product', pid=p.id) }}">Indisponível · ver</a>{% endif %}</div>
+</article>{% endmacro %}
+{% macro rail(title, idx, items, auto=false, more=None) %}{% if items %}
+<section class="wrap rails"><p class="idx">{{ idx }}</p><div class="rh"><h2>{{ title }}</h2>{% if more %}<a class="more" href="{{ more }}">Ver todos →</a>{% endif %}<div class="arrows"><button class="prev" aria-label="Anterior">‹</button><button class="next" aria-label="Próximo">›</button></div></div>
+<div class="rail" {{ 'data-auto' if auto }}>{% for p in items %}{{ card(p) }}{% endfor %}</div></section>{% endif %}{% endmacro %}

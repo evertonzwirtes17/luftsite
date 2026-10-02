@@ -1,0 +1,22 @@
+{% extends "site.html" %}{% from "_card.html" import card with context %}
+{% block title %}{{ p.name }} · BYN Sports{% endblock %}
+{% set COL = {'preto':'#141414','preta':'#141414','branco':'#fff','branca':'#fff','vermelho':'#c8443c','vermelha':'#c8443c','azul':'#2f5fa8','verde':'#2f8a4f','amarelo':'#e5c22f','amarela':'#e5c22f','cinza':'#8d8d8d','rosa':'#e58aa8','laranja':'#e8862c','roxo':'#6d4aa8','marrom':'#7a5236','bege':'#d8c3a0','dourado':'#d4a86a','prata':'#c0c0c0'} %}{% block body %}<div class="light pg">
+<button class="xclose" id="xclose" type="button" aria-label="Fechar e voltar" title="Fechar (Esc)"><span>✕</span><b>Fechar</b></button>
+<p class="crumb"><a href="{{ url_for('public.index') }}">Início</a> / <a href="{{ url_for('public.index') }}?cat={{ p.category.slug }}#catalogo">{{ p.category.name }}</a> / {{ p.name }}</p>
+<div class="pgrid"><div class="gal"><div class="zoom main" data-rec="{{ p.id }}|{{ p.price_now|brl }}|{{ first }}|{{ p.name }}"><img id="mainimg" src="{{ first }}" alt="{{ p.name }}" {{ 'hidden' if not first }}>{% if not first %}<span class="ph" id="ph">BYN</span>{% endif %}
+<div class="badges">{% if p.on_sale %}<b class="off">{{ p.discount }}% OFF</b>{% endif %}{% if not p.available %}<b class="out">ESGOTADO</b>{% elif p.low %}<b>ÚLTIMAS UNIDADES</b>{% endif %}{% if p.is_new %}<b>NOVO</b>{% endif %}{% if p.bestseller %}<b>MAIS VENDIDO</b>{% endif %}</div></div>
+<div class="thumbs" id="thumbs"></div></div>
+<div class="pinfo"><small>{{ p.brand.name if p.brand else p.category.name }}</small><h1>{{ p.name }}</h1>
+<div class="price big">{% if p.on_sale %}<s>{{ p.price|brl }}</s>{% endif %}<strong>{{ p.price_now|brl }}</strong>{% if p.on_sale %}<em class="offtag">{{ p.discount }}% OFF</em>{% endif %}</div>
+<p class="desc">{{ p.description }}</p>
+{% if p.spec_dict or p.team %}<dl class="specs">{% if p.team %}<div><dt>Time</dt><dd>{{ p.team }}</dd></div>{% endif %}{% for k, v in p.spec_dict.items() if v %}<div><dt>{{ k }}</dt><dd>{{ v }}</dd></div>{% endfor %}</dl>{% endif %}
+{% if p.all_colors %}<p class="lbl">Cor</p><div class="opts" data-g="color">{% for c in p.all_colors %}<button class="opt" data-v="{{ c }}"><i class="swc" style="background:{{ COL.get(c|lower, '#cfc9bb') }}"></i>{{ c }}</button>{% endfor %}</div>{% endif %}
+{% if p.all_sizes %}<p class="lbl">Tamanho</p><div class="opts" data-g="size">{% for c in p.all_sizes %}<button class="opt" data-v="{{ c }}">{{ c }}</button>{% endfor %}</div>{% endif %}
+<p class="avail {{ 'ok' if p.available else 'no' }}">{{ ('Disponível' ~ (' · restam poucas unidades' if p.low else '')) if p.available else 'Produto esgotado' }}{% if p.sku %} <span class="sku">Cód. {{ p.sku }}</span>{% endif %}</p>
+{% if p.available %}<div class="qty"><button id="qm" aria-label="Diminuir">−</button><span id="qv">1</span><button id="qp" aria-label="Aumentar">+</button></div><span class="qhint" id="qhint"></span>
+<a id="pwa" class="btn solid big" data-val="{{ p.price_now }}" data-stock="{{ p.stock if p.stock is not none else '' }}" data-wa data-pid="{{ p.id }}" data-tpl="{{ S.msg_product }}" data-name="{{ p.name }}" data-price="{{ p.price_now|brl }}" href="{{ p|wa }}" target="_blank" rel="noopener">{{ S.btn_text }}</a>
+<button id="addsel" class="btn line big" data-id="{{ p.id }}" data-name="{{ p.name }}">+ Adicionar à minha seleção</button>{% else %}<div class="notify"><p><b>Esse produto está indisponível no momento.</b></p><p class="hint">Deixe seu WhatsApp ou e-mail e avisamos quando chegar. Usamos seu contato só para isso.</p><div class="nrow"><input id="ncontact" placeholder="WhatsApp ou e-mail" maxlength="80"><button class="btn solid" id="nbtn" data-id="{{ p.id }}">Avise-me</button></div></div>{% endif %}
+<button class="btn line big" id="pfav" data-id="{{ p.id }}">♥ Favoritar</button>
+<script type="application/json" id="gal">{{ gal_json|safe }}</script>
+<script type="application/json" id="vars">{{ p.variants|map(attribute='color')|list|tojson if false else '' }}{{ vars_json|safe }}</script></div></div>
+{% if related %}<h2 class="rel-h">{{ 'Você também pode gostar' if p.available else 'Talvez você goste destes' }}</h2><div class="grid">{% for r in related %}{{ card(r) }}{% endfor %}</div>{% endif %}</div>{% if p.available %}<div class="pbar"><div><small>{{ p.name }}</small><b>{{ p.price_now|brl }}</b></div><button class="btn solid" id="pbtn" type="button">Falar no WhatsApp</button></div>{% endif %}{% endblock %}

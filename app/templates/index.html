@@ -1,0 +1,56 @@
+{% extends "site.html" %}
+{% from "_card.html" import card, rail with context %}
+{% block body %}
+<section class="hero" id="topo"><div class="guides"><i></i><i></i><i></i></div>
+  <svg class="route" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path id="rt" d="M-20 520 C 260 560, 420 140, 700 300 S 1000 80, 1220 90" pathLength="1"/>
+    <path d="M-20 560 C 300 600, 460 200, 720 340 S 1020 130, 1220 150" pathLength="1" class="thin"/>
+    <circle r="4" fill="#fff"><animateMotion dur="4s" repeatCount="indefinite" rotate="auto"><mpath href="#rt"/></animateMotion></circle><circle r="3" fill="#fff"><animateMotion dur="4s" begin="2s" repeatCount="indefinite" rotate="auto"><mpath href="#rt"/></animateMotion></circle></svg>
+  <div class="hero-big" aria-hidden="true">BYN</div>
+  <div class="hero-txt"><p class="eyebrow">{{ S.hero_eyebrow }}</p>
+    {% set w = S.hero_title.split(' ') %}<h1>{{ w[:-1]|join(' ') }} <em>{{ w[-1] }}</em></h1>
+    <p class="lead">{{ S.hero_lead }}</p>
+    <a class="btn solid" href="#catalogo">{{ S.hero_cta }} ↓</a></div>
+  <div class="showcase"><div class="stage" aria-hidden="true"><i class="slab a"></i><i class="slab b"></i><i class="pool"></i><i class="floor"></i><i class="grain"></i></div>
+<div class="shoes"><img src="{{ url_for('static', filename='img/hero-shoes.webp') }}" width="1042" height="680" alt="Tênis esportivo e chuteira de campo BYN Sports" fetchpriority="high"></div></div></section>
+<section class="slider" id="slider" aria-roledescription="carousel" aria-label="Destaques da loja"><div class="strack">
+{% for s in slides %}<article class="slide {{ 'on' if loop.first }}">{% if s.img %}<img src="{{ url_for('static', filename='uploads/' ~ s.img) }}" alt="">{% endif %}<div class="shade"></div>
+<div class="scopy"><p class="eyebrow">0{{ loop.index }} / 0{{ slides|length }}</p><h2>{{ s.t }}</h2><p>{{ s.s }}</p><button class="btn solid" data-g="{{ s.f }}">Explorar →</button></div></article>{% endfor %}</div>
+<button class="sarrow prev" aria-label="Anterior">‹</button><button class="sarrow next" aria-label="Próximo">›</button>
+<div class="sdots">{% for s in slides %}<button class="{{ 'on' if loop.first }}" aria-label="Slide {{ loop.index }}"></button>{% endfor %}</div></section>
+<div class="ticker" aria-hidden="true"><div>{% set reps = (8 // (categories|length or 1)) + 1 %}{% for i in range(2) %}{% for r in range(reps) %}{% for c in categories %}<span>{{ c.name }}</span>{% endfor %}{% endfor %}{% endfor %}</div></div>
+<div class="light">
+<div class="catbar"><div class="cbin"><button class="cb" data-g="camisas">Camisas</button><button class="cb" data-g="agasalhos">Agasalhos</button><button class="cb" data-g="tenis">Tênis</button><button class="cb" data-g="chuteiras">Chuteiras</button><button class="cb hot" data-g="promo">Ofertas</button></div></div>
+<section class="wrap cats" id="categorias"><p class="idx">Categorias</p><h2>Compre por categoria</h2>
+<div class="cgrid">{% for c in categories %}<button class="ctile" data-f="{{ c.slug }}">{% if covers.get(c.id) %}<img loading="lazy" src="{{ url_for('static', filename='uploads/' ~ covers[c.id]) }}" alt="">{% endif %}<span>{{ c.name }}</span><i>Ver produtos →</i></button>{% endfor %}</div></section>
+{% set chu = categories|selectattr('slug', 'in', ['chuteiras-society', 'chuteiras-futsal', 'chuteiras-campo'])|list %}{% if chu %}<section class="wrap cats"><p class="idx">Chuteiras</p><h2>Escolha sua chuteira</h2>
+<div class="cgrid">{% set D = {'chuteiras-society': 'Grama sintética', 'chuteiras-futsal': 'Quadra e piso liso', 'chuteiras-campo': 'Grama natural'} %}{% for c in chu %}<button class="ctile" data-f="{{ c.slug }}">{% if covers.get(c.id) %}<img loading="lazy" src="{{ url_for('static', filename='uploads/' ~ covers[c.id]) }}" alt="">{% endif %}<span>{{ c.name.replace('Chuteiras ', '') }}<em>{{ D[c.slug] }}</em></span><i>Explorar →</i></button>{% endfor %}</div></section>{% endif %}
+{% if teams and S.show_teams != '0' %}<section class="wrap cats"><p class="idx">Times</p><h2>Vista seu time</h2><div class="pills">{% for t in teams %}<a class="tpill" href="{{ url_for('public.team', nome=t) }}">{{ t }}</a>{% endfor %}</div></section>{% endif %}
+{% if S.show_recent != '0' %}<section class="wrap recentw" id="recentw" hidden><p class="idx">Continue de onde parou</p><div class="rh"><h2>Vistos recentemente</h2></div><div class="rail" id="recent"></div></section>{% endif %}
+{% if counts and S.show_brands != '0' %}<section class="wrap brands" id="marcas"><p class="idx">Marcas</p><h2>Navegue por marca</h2>
+<div class="bgrid">{% for b in brands %}{% if counts.get(b.id) %}<button class="bcard" data-b="{{ b.slug }}">{% if b.logo %}<img src="{{ url_for('static', filename='uploads/' ~ b.logo) }}" alt="{{ b.name }}">{% else %}<span class="bn">{{ b.name }}</span>{% endif %}<small>{{ counts[b.id] }} produto{{ 's' if counts[b.id] > 1 }}</small><i>→</i></button>{% endif %}{% endfor %}</div></section>{% endif %}
+{% if S.show_featured != '0' %}{{ rail("Produtos em destaque", "Seleção", featured, true) }}{% endif %}
+{% if S.show_promos != '0' %}{{ rail("Promoções", "Ofertas", promos, false, url_for('public.offers')) }}{% endif %}
+{% if S.show_launch != '0' %}{{ rail("Lançamentos", "Novidades", news, false, url_for('public.launches')) }}{% endif %}
+{% if S.show_best != '0' %}{{ rail("Mais vendidos", "Favoritos", best) }}{% endif %}
+<section class="wrap" id="catalogo">
+  <p class="idx">Catálogo</p><h2>Escolha o seu par.</h2>
+  <div class="tbar"><div class="sw"><input id="q" aria-label="Buscar produtos" type="search" placeholder="Buscar: chuteira, camisa, time, marca…" autocomplete="off"><div id="sug" class="sug" hidden></div></div><button id="fbtn" class="btn line fbtn">Filtrar</button></div><div class="tools" id="tools">
+    <select id="brand" aria-label="Marca"><option value="">Todas as marcas</option>{% for b in brands %}<option value="{{ b.slug }}">{{ b.name }}</option>{% endfor %}</select>
+    <select id="price" aria-label="Faixa de preço"><option value="">Qualquer preço</option><option value="0-200">Até R$ 200</option><option value="200-500">R$ 200 a 500</option><option value="500-99999">Acima de R$ 500</option></select>
+    <select id="sort" aria-label="Ordenar por"><option value="new" {{ 'selected' if S.default_sort == 'new' }}>Mais recentes</option><option value="asc" {{ 'selected' if S.default_sort == 'asc' }}>Menor preço</option><option value="desc" {{ 'selected' if S.default_sort == 'desc' }}>Maior preço</option></select>
+    <select id="team" aria-label="Time" hidden></select><select id="size" aria-label="Tamanho" hidden></select><select id="color" aria-label="Cor" hidden></select>
+    <label class="chk"><input type="checkbox" id="promo"> Só promoções</label><label class="chk"><input type="checkbox" id="avail"> Só disponíveis</label><div class="fa"><button class="btn solid" id="fapply">Aplicar filtros</button><button class="lnk" id="fclear">Limpar filtros</button></div></div>
+  <div class="chips"><button class="chip on" data-f="all">Todos</button><button class="chip" data-f="fav">♥ Favoritos <span id="favn"></span></button>{% for c in categories %}<button class="chip" data-f="{{ c.slug }}">{{ c.name }}</button>{% endfor %}</div>
+  <div class="grid" id="grid">{% for p in products %}{{ card(p) }}{% else %}<p class="empty">Em breve, novidades por aqui.</p>{% endfor %}</div>
+  <p class="ccount" id="count" aria-live="polite"></p><div class="emptyst" id="none" hidden><b>Nenhum produto encontrado</b><p>Tente outra busca ou remova alguns filtros.</p><button class="btn line" id="fclear2" type="button">Limpar filtros</button></div><div class="moreb"><button class="btn line" id="morebtn" type="button" hidden>Ver mais produtos</button></div></section>
+<section class="wrap how"><p class="idx">Como comprar</p><h2>Simples e direto.</h2>
+<div class="steps"><div class="step reveal"><b>01</b><h3>Escolha</h3><p>Navegue pelo catálogo e abra o produto que gostou.</p></div><div class="step reveal"><b>02</b><h3>Selecione</h3><p>Escolha tamanho, cor e monte sua seleção.</p></div><div class="step reveal"><b>03</b><h3>Fale com a gente</h3><p>Envie tudo pelo WhatsApp e confirme disponibilidade e valores.</p></div></div></section>
+</div>{% if S.show_about != '0' %}<section class="about"><div class="reveal"><p class="eyebrow">BYN Sports</p><h2>Tênis, chuteiras e roupas esportivas.</h2>
+<p>Conforto, performance e estilo. Fale direto com a gente pelo WhatsApp para tirar dúvidas, conferir tamanhos e fechar seu pedido.</p>
+<a class="btn solid" href="https://wa.me/{{ S.whatsapp }}" target="_blank" rel="noopener">Falar no WhatsApp →</a></div>
+<img class="aboutimg reveal" src="{{ url_for('static', filename='img/flatlay.jpg') }}" alt="Agasalho, tênis e chuteiras" loading="lazy"></section>{% endif %}
+<section class="finale reveal"><img class="flogo" src="{{ url_for('static', filename='img/logo.png') }}" alt="BYN Sports · Bom Y Novo" width="260" height="288" loading="lazy">
+<div class="fcopy"><h2>Do seu jeito, <em>sempre.</em></h2><a class="btn solid" href="https://wa.me/{{ S.whatsapp }}" target="_blank" rel="noopener">Falar no WhatsApp →</a></div></section>
+
+{% endblock %}

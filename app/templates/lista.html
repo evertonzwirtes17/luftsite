@@ -1,0 +1,5 @@
+{% extends "site.html" %}{% from "_card.html" import card with context %}
+{% block title %}{{ title }} · BYN Sports{% endblock %}
+{% block body %}<div class="light pg"><p class="crumb"><a href="{{ url_for('public.index') }}">Início</a> / {{ title }}</p>
+<p class="idx">{{ sub }}</p><h1 class="ptitle">{{ title }}</h1>
+<div class="grid" id="grid">{% for p in items %}{{ card(p) }}{% else %}<p class="empty">Nenhum produto por aqui ainda.</p>{% endfor %}</div></div>{% endblock %}
